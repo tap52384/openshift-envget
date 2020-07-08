@@ -5,6 +5,7 @@ trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 # 0. Define variables that will be used in this script.
+django="false"
 filename="${DIR}/.env"
 login_url=""
 overwrite="false"
@@ -27,10 +28,17 @@ deploymentconfigs, meaning later configmap/secrets take precedence over earlier 
 environment variables defined directly in the dc/name resource will overwrite those from configmaps
 and secrets with the same names.
 
-Usage: oc-envget [options] <resource>
+oc v3.11+ and/or kubectl v1.11+ is required to use this script.
+
+Usage:
+  oc-envget [options] <resource>
+
+Example:
+  oc-envget --login-url=[https://localhost:8443] --overwrite=true dc/config_name
 
 Options:
 
+    --django=false:    If true, the value DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1 is added to the output file.
     --filename='':     Specifies the output file name. Defaults to ${DIR}/.env. Creates this file as needed.
     --help             Shows this text.
     --login-url='':    The URL for the Kubernetes/OpenShift instance.
@@ -53,6 +61,14 @@ fi;
 for i in "$@"
 do
 case $i in
+    --django=*)
+    django="${i#*=}"
+
+    if [ "${django}" = "true" ]; then
+        django=true
+    fi
+    shift # past argument=value
+    ;;
     --filename=*)
     filename="${i#*=}"
     shift # past argument=value
@@ -105,7 +121,7 @@ if [ -z "${filename}" ]; then
 fi
 
 if [ -f "${filename}" ] && [ "${overwrite}" != "true" ]; then
-    echo "The file ${filename} exists and overwrite is false by default (--overwrite)."
+    echo "The file ${filename} exists and overwrite is false by default (set --overwrite=true)."
     exit 1;
 fi
 
@@ -123,7 +139,7 @@ fi
 
 # Stops if the specified tool is unavailable
 if ! command -V "${tool}" &> /dev/null; then
-    echo "The specified tool, ${tool}, is not available (--tool)."
+    echo "The specified tool, ${tool}, is not available in the \$PATH (--tool)."
     exit 1;
 fi
 
@@ -303,6 +319,14 @@ temp=$(${tool} set env "${resource}" --resolve=true --list)
 
 # Adds these environment variables values to the output file
 addValues "${temp}"
+
+# If the "django" parameter is True, then add this value, replacing any previous
+# ones
+if [ "${django}" = "true" ]; then
+    echo "Adding DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1 as requested..."
+    temp="DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1"
+    addValues "${temp}"
+fi
 
 # Sort the files in place
 sort -o "${filename}" "${filename}"
