@@ -4,7 +4,6 @@ A Bash script that creates a .env from a given deploymentconfig in OpenShift and
 Kubernetes for the purposes of local development. Tested on Windows (Git Bash) and macOS.
 
 ## Description
---------------
 
 This script will create a .env file containing all environment files referenced in a given
 deploymentconfig. Since the OpenShift command-line tools share much of the functionality
@@ -17,7 +16,6 @@ environment variables defined directly in the dc/name resource will overwrite th
 and secrets with the same names.
 
 ## Prerequisites
-----------------
 
 You need at least the [OpenShift command-line tools](https://github.com/openshift/origin/releases)
 __v3.11__ or `kubectl` __v1.11__ to use this script as it includes the `base64decode` function
@@ -33,7 +31,6 @@ You can use the `oc-install.sh` script in this repository to install the
 [OpenShift command-line tools](https://github.com/openshift/origin/releases).
 
 ## Usage
---------
 
 These scripts have been tested for Windows ([Git Bash](https://git-scm.com/)) and macOS.
 
@@ -48,7 +45,6 @@ oc-envget --login-url=[https://localhost:8443] --overwrite=true dc/config_name
 ```
 
 ## Command Line Options
-------------------------
 
 * __--django=false__
 
@@ -89,7 +85,6 @@ oc-envget --login-url=[https://localhost:8443] --overwrite=true dc/config_name
      The login username, defaulting to `$(whoami)`.
 
 ## Reference Links
-------------------
 - <https://stackoverflow.com/a/58117444/1620794>
 - <https://unix.stackexchange.com/a/261735>
 - <https://golang.org/pkg/text/template/>
