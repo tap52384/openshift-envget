@@ -3,10 +3,11 @@
 set -euo pipefail
 trap 's=$?; echo >&2 "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+CWD="$(pwd)"
 
 # 0. Define variables that will be used in this script.
 django="false"
-filename="${DIR}/.env"
+filename="${CWD}/.env"
 login_url=""
 overwrite="false"
 project=""
@@ -39,7 +40,7 @@ Example:
 Options:
 
     --django=false:    If true, the value DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1 is added to the output file.
-    --filename='':     Specifies the output file name. Defaults to ${DIR}/.env. Creates this file as needed.
+    --filename='':     Specifies the output file name. Defaults to ${CWD}/.env. Creates this file as needed.
     --help             Shows this text.
     --login-url='':    The URL for the Kubernetes/OpenShift instance.
     --overwrite=false: If true, overwrites the output file if it exists.
