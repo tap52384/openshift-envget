@@ -72,6 +72,8 @@ case $i in
     ;;
     --filename=*)
     filename="${i#*=}"
+    # Replace the tilde, if used, with ${HOME}
+    filename="${filename/#\~/$HOME}"
     shift # past argument=value
     ;;
     -h|--help)
